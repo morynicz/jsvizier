@@ -54,6 +54,12 @@ describe("detemines which viziers should be used on which stage of hunt", () => 
     expect(calcVizier(viziers, stages)).toEqual([[1, 8]]);
   });
 
+  it("should handle multiple stages", () => {
+    let viziers = [2, 6, 7];
+    let stages = [5, 8];
+    expect(calcVizier(viziers, stages)).toEqual([[6], [2, 7]]);
+  });
+
   xit("should return vizier sequence for two stages", () => {
     let viziers = [1, 2, 5, 10];
     let stages = [6, 11];

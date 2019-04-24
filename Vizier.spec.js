@@ -12,7 +12,9 @@ describe("detemines which viziers should be used on which stage of hunt", () => 
   });
 
   it("should return single vizier if his strength is not less than stage", () => {
-    expect(calcVizier([2], [1])).toEqual([[2]]);
+    let viziers = [2];
+    let stages = [1];
+    expect(calcVizier(viziers, stages)).toEqual([[2]]);
   });
 
   it("should return single vizier which is enough to pass the stage", () => {
@@ -46,9 +48,22 @@ describe("detemines which viziers should be used on which stage of hunt", () => 
     expect(calcVizier(viziers, stages)).toEqual([[2, 3]]);
   });
 
+  it("should omit middle strength viziers if it is enough to beat stage", () => {
+    let viziers = [1, 3, 7, 8];
+    let stages = [8];
+    expect(calcVizier(viziers, stages)).toEqual([[1, 8]]);
+  });
+
   xit("should return vizier sequence for two stages", () => {
     let viziers = [1, 2, 5, 10];
     let stages = [6, 11];
     expect(calcVizier(viziers, stages)).toEqual([[2, 5], [1, 10]]);
+  });
+
+  xit("should handle sequences where low viziers are needed to pass higher stages", () => {
+    let viziers = [10, 20, 30, 50, 61, 70];
+    let stages = [50, 70, 80];
+
+    expect(calcVizier(viziers, stages)).toEqual([61], [50, 30], [70, 20]);
   });
 });

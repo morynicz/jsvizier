@@ -4,12 +4,24 @@ function calcVizier(viziers, stages) {
   }
 
   let finalResult = [];
-  let availableViziers = viziers.slice();
+  let availableViziers = Array.apply(null, { length: viziers.length }).map((val, idx) => idx);
   for (let i = 0; i < stages.length; i++) {
-    findStageSolution(availableViziers, stages[i], finalResult);
+    findStageSolution(availableViziers, stages[i], finalResult, viziers);
     availableViziers = filterUsedViziers(availableViziers, finalResult);
   }
-  return finalResult;
+
+  return translateVizierIndicesToStrengths(finalResult, viziers);
+}
+
+function translateVizierIndicesToStrengths(finalResult, viziers) {
+  let translated = [];
+  for (let i = 0; i < finalResult.length; i++) {
+    translated.push([]);
+    for (let j = 0; j < finalResult[i].length; j++) {
+      translated[i].push(viziers[finalResult[i][j]]);
+    }
+  }
+  return translated;
 }
 
 function filterUsedViziers(availableViziers, finalResult) {
@@ -22,29 +34,35 @@ function filterUsedViziers(availableViziers, finalResult) {
   return availableViziers;
 }
 
-function findStageSolution(availableViziers, stage, finalResult) {
+function findStageSolution(availableViziers, stage, finalResult, viziers) {
   let results = [];
   for (let i = 0; i < availableViziers.length; i++) {
-    results = checkSequenceStartingWithVizier([], availableViziers, stage, results, i);
+    results = checkSequenceStartingWithVizier([], availableViziers, stage, results, i, viziers);
   }
-  results.sort((lhs, rhs) => { return sum(lhs) - sum(rhs); });
-  finalResult.push(results[0]);
-  return results;
+
+  if (results.length > 0) {
+    results.sort((lhs, rhs) => { return sum(lhs, viziers) - sum(rhs, viziers); });
+    finalResult.push(results[0]);
+  }
 }
 
-function checkSequenceStartingWithVizier(initialResult, viziers, stage, results, vizierIndex) {
+function checkSequenceStartingWithVizier(initialResult, availableViziers, stage, results, vizierIndex, viziers) {
   let result = initialResult.slice();
-  result.push(viziers[vizierIndex]);
-  if (sum(result) > stage) {
+  result.push(availableViziers[vizierIndex]);
+  if (sum(result, viziers) > stage) {
     results.push(result);
   } else {
-    for (let i = vizierIndex + 1; i < viziers.length; i++) {
-      results = checkSequenceStartingWithVizier(result, viziers, stage, results, i);
+    for (let i = vizierIndex + 1; i < availableViziers.length; i++) {
+      results = checkSequenceStartingWithVizier(result, availableViziers, stage, results, i, viziers);
     }
   }
   return results;
 }
 
-function sum(arr) {
-  return arr.reduce((total, added) => { return total + added; });
+function sum(arr, viziers) {
+  let translated = [];
+  for (let i = 0; i < arr.length; i++) {
+    translated.push(viziers[arr[i]]);
+  }
+  return translated.reduce((total, added) => { return total + added; });
 }

@@ -1,12 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <title>Vizir</title>
-  </head>
+<head>
+  <title>Vizier</title>
+</head>
 
-  <body>
-  </body>
-  <script src="Vizir.js"></script>
+<body>
+  <div>
+    <table id="viziers">
+    </table>
+    <div>
+      <input type="number" id="vizierInput" value="1234">
+      <button onclick="addVizier()">add vizier</button>
+    </div>
+  </div>
+  <div>
+    <table id="stages">
+    </table>
+    <div>
+      <input type="number" id="stageInput" value="1234">
+      <button onclick="addStage()">add stage</button>
+    </div>
+  </div>
+
+  <div>
+    <button onclick="calculateViziers()">calculate</button>
+    <button onclick="save()">save</button>
+    <button onclick="load()">load</button>
+  </div>
+  <table id="results">
+  </table>
+  <script>
+    let viziers = [];
+    let stages = [];
+
+    function addVizier() {
+      var x = parseInt(document.getElementById("vizierInput").value);
+      viziers.push(x);
+      viziers.sort((a, b) => a - b);
+      console.log(viziers);
+      let table = document.getElementById("viziers");
+      updateTable(table, viziers);
+    }
+
+    function addStage() {
+      var x = parseInt(document.getElementById("stageInput").value);
+      stages.push(x);
+      stages.sort((a, b) => a - b);
+      console.log(stages);
+      let table = document.getElementById("stages");
+      updateTable(table, stages);
+    }
+
+    function updateTable(table, arr) {
+      for (let i = table.rows.length - 1; i >= 0; i--) {
+        table.deleteRow(i);
+      }
+
+      for (let i = 0; i < arr.length; i++) {
+        let row = table.insertRow(-1);
+        let cell1 = row.insertCell(0);
+        let cell2 = row.insertCell(1);
+        cell1.innerHTML = arr[i];
+        let btn = document.createElement('input');
+        btn.type = "button";
+        btn.className = "btn";
+        btn.value = "delete";
+        btn.onclick = () => {
+          arr.splice(i, 1);
+          updateTable(table, arr);
+        }
+        cell2.appendChild(btn);
+      }
+    }
+
+    function calculateViziers() {
+      console.log("v " + viziers + " s " + stages);
+      let result = calcVizier(viziers, stages);
+      console.log(result);
+      let table = document.getElementById("results");
+
+      for (let i = 0; i < result.length; i++) {
+        let row = table.insertRow(-1);
+        for (let j = 0; j < result[i].length; j++) {
+          let cell = row.insertCell(-1);
+          cell.innerHTML = result[i][j];
+        }
+      }
+    }
+
+    function save() {
+      let data = '{"viziers": ' + JSON.stringify(viziers) + ', "stages": ' + JSON.stringify(stages) + '}';
+      setCookie("vizier_data", data, 10000);
+    }
+
+    function load() {
+      let json_data = getCookie("vizier_data");
+      if (json_data.length > 0) {
+        let data = JSON.parse(json_data);
+        viziers = data.viziers;
+        stages = data.stages;
+        let stagesTable = document.getElementById("stages");
+        updateTable(stagesTable, stages);
+        let vizierTable = document.getElementById("viziers");
+        updateTable(vizierTable, viziers);
+      }
+    }
+
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+      var expires = "expires=" + d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+  </script>
+</body>
+<script src="Vizier.js"></script>
+
 
 </html>

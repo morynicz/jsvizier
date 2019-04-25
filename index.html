@@ -7,6 +7,7 @@
 
 <body>
   <div>
+    Viziers
     <table id="viziers">
     </table>
     <div>
@@ -15,6 +16,7 @@
     </div>
   </div>
   <div>
+    Stages
     <table id="stages">
     </table>
     <div>
@@ -22,14 +24,21 @@
       <button onclick="addStage()">add stage</button>
     </div>
   </div>
+  <div>
+    Multiplier <input type="number" id="multiplierInput" value=1>
 
+  </div>
   <div>
     <button onclick="calculateViziers()">calculate</button>
     <button onclick="save()">save</button>
     <button onclick="load()">load</button>
   </div>
-  <table id="results">
-  </table>
+  <div>
+    Solution
+    <table id="results">
+    </table>
+  </div>
+
   <script>
     let viziers = [];
     let stages = [];
@@ -75,10 +84,13 @@
     }
 
     function calculateViziers() {
-      console.log("v " + viziers + " s " + stages);
-      let result = calcVizier(viziers, stages);
-      console.log(result);
+      let multiplier = parseFloat(document.getElementById("multiplierInput").value);
+      let result = calcVizier(viziers, stages, multiplier);
       let table = document.getElementById("results");
+
+      for (let i = table.rows.length - 1; i >= 0; i--) {
+        table.deleteRow(i);
+      }
 
       for (let i = 0; i < result.length; i++) {
         let row = table.insertRow(-1);
